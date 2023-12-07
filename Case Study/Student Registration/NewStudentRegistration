@@ -1,0 +1,84 @@
+package com.oupp.jdbc.caseStudy.studentRegistration;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Scanner;
+
+public class NewStudentRegistration {
+	Connection connection;
+	Scanner scanner;
+
+	NewStudentRegistration() {
+
+	}
+
+	NewStudentRegistration(Connection connection, Scanner scanner) {
+		this.connection = connection;
+		this.scanner = scanner;
+
+	}
+
+	public void NewAddmission() {
+		System.out.println("welcome to Register page");
+		System.out.println("----- ----- ----- ----- ----- ");
+		scanner.nextLine();
+		System.out.print("Enter Student Name : ");
+		String name = scanner.nextLine();
+		System.out.print("Enter Student RollNo :");
+		long rollNo = scanner.nextLong();
+		scanner.nextLine();
+		System.out.print("Enter Your Password :");
+		String password = scanner.nextLine();
+		System.out.print("Enter Your class Name Student Want to Admitted :");
+		String addmission = scanner.nextLine();
+
+		String insert_Student = "insert into sdvpschool_Registation(roll_no,Studentname,class,studentpassword) values(?,?,?,?)";
+
+		try {
+			if (student_exit(rollNo)) {
+				PreparedStatement preparedstatement = connection.prepareStatement(insert_Student);
+				preparedstatement.setLong(1, rollNo);
+				preparedstatement.setString(2, name);
+				preparedstatement.setString(3, addmission);
+				preparedstatement.setString(4, password);
+
+				int rowaffected = preparedstatement.executeUpdate();
+				if (rowaffected > 0) {
+					System.out.println(" * * * * *congratulation " + name + " you registered succesfull * * * *");
+				} else {
+					System.out.println(" * * * * * Due to some Technical Error Student Not Register * * * * *");
+				}
+
+			}else {
+				System.out.println("\n This rollno is already register");
+			}
+
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
+	private boolean student_exit(long rollNo) {
+
+		String check_Student = "select * from sdvpschool_Registation where roll_no=?";
+
+		try {
+
+			PreparedStatement preparedstudent = connection.prepareStatement(check_Student);
+			ResultSet resultset = preparedstudent.executeQuery();
+			if (resultset.next()) {
+				return true;
+			} else {
+				return false;
+			}
+
+		} catch (SQLException e) {
+
+		}
+
+		return false;
+	}
+
+}
