@@ -1,0 +1,111 @@
+package com.oupp.jdbc.caseStudy.atmCaseStudy;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Scanner;
+
+public class BankAuthority {
+
+	private final static String url = "jdbc:mysql://localhost:3306/ouppdb";
+	private final static String userName = "root";
+	private final static String password = "Manoj@2601";
+
+	public static void main(String[] args) {
+
+		Scanner scanner = new Scanner(System.in);
+		// register the Driver
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			System.out.println("Driver register succesfully");
+
+		} catch (ClassNotFoundException e) {
+			System.out.println(e.getMessage());
+
+		}
+
+		// connect with database
+		try {
+
+			Connection connection = DriverManager.getConnection(url, userName, password);
+			System.out.println("Connected With Database succesfully");
+			RegisterNewUser registerUser = new RegisterNewUser(connection, scanner);
+			LoginExistingUser existingUser = new LoginExistingUser(connection, scanner);
+			ManagementTransaction transaction = new ManagementTransaction(connection, scanner);
+			DisplayAccount displayAccount = new DisplayAccount(connection, scanner);
+			System.out.println(" * * * * * WELCOME TO SBI BANK * * * * * ");
+			int choice;
+
+			do {
+				System.out.println("1.Register New User\n2.Login\n3.Exit");
+				System.out.println("______ _______ _______ ______");
+				System.out.print("Enter your choice :");
+				choice = scanner.nextInt();
+
+				switch (choice) {
+				case 1:
+					/*
+					 * it is used for register new user .it call a class where we register new user
+					 * and add to our database as a new user
+					 */
+
+					registerUser.newUser();
+					break;
+				case 2:
+					/*
+					 * if case is used because for login we have to check the user is valid user or
+					 * not where we call the LoginExisting class and by the help of class we check
+					 * the user is vali or not if valid then allow to perform deposite,withdraw ,and
+					 * show balance feature
+					 */
+					if (existingUser.loginCheck()) {
+						int choice2 = 0;
+
+						/*
+						 * WHO ARE SUCCESFULLY REGISTER THEN FOR REGISTER user we hava allow all the
+						 * user how succesfully register they can perform deposite ,withdraw and check
+						 * balance
+						 */
+						while (choice < 4) {
+							System.out.println("____ _____ ______ _____");
+							System.out.println("1.Deposite Money\n2.Withdraw Money\n3.Check Balance\n4.exit");
+							System.out.println("______ _____ _____ _____");
+							System.out.print("Enter your choice :");
+							choice2 = scanner.nextInt();
+							switch (choice2) {
+							case 1:
+								/* call the ManagmentTransaction class to perform deposite operation */
+								transaction.deposite();
+								break;
+							case 2:
+								/* call the ManagmentTransaction class to perform withdraw operation */
+								transaction.withdraw();
+								break;
+							case 3:
+								/* call the DisplayAccount class to perform display operation */
+								displayAccount.display();
+								break;
+							default:
+								System.out.println("you put invalid input");
+								System.out.println(" * * * * * Thank you for visiting the page * * * * *");
+								return;
+
+							}
+
+						}
+
+					} else {
+						System.out.println("you are putting invalid credentials");
+					}
+
+				}
+
+			} while (choice > 0 && choice < 3);
+			System.out.println("  * * * * Thank you pls visit again  * * * * * *");
+
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
+}
